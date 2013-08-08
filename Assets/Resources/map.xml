@@ -16,10 +16,14 @@
     <tile img="floor" pos="-7,10" flags="impassible" />
     <tile img="floor" pos="-6,10" flags="impassible" />
     <tile img="floor_slope_1" pos="-5,10" flags="slope1" />
+    <tile img="floor" pos="-5,11" flags="impassible" />
     <tile img="floor_slope_1" pos="-4,11" flags="slope1" />
+    <tile img="floor" pos="-4,12" flags="impassible" />
     <tile img="floor" pos="-3,12" flags="impassible" />
     <tile img="floor_slope_2" pos="-2,11" flags="slope2" />
+    <tile img="floor" pos="-2,12" flags="impassible" />
     <tile img="floor_slope_2" pos="-1,10" flags="slope2" />
+    <tile img="floor" pos="-1,11" flags="impassible" />
 		<tile img="floor" pos="0,10" flags="impassible" />
 		<tile img="floor" pos="1,10" flags="impassible" />
 		<tile img="floor" pos="2,10" flags="impassible" />

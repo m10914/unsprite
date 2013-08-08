@@ -282,7 +282,9 @@
 			{
 				//allocate new material
 				this.Material = new Material(this.SpritesManager.InShader);
-				var tex = Resources.Load(this.TextureName) as Texture;
+				Texture tex = Resources.Load(this.TextureName) as Texture;
+				tex.filterMode = FilterMode.Point;
+				tex.mipMapBias = 0;
 				if (tex != null)
 				{
 					this.Material.mainTexture = tex;
