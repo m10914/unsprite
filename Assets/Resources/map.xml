@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<map>
+	
+	<header>
+		<!-- some map headers -->
+	</header>
+	
+	<sprites>
+		<sprite name="floor" atlas="test" pos="0,0" />
+		<sprite name="floor_end_right" atlas="test" pos="2,0" />
+	</sprites>
+	
+	<data>
+    <tile img="floor" pos="-3,12" flags="impassible" />
+    <tile img="floor" pos="-2,11" flags="slope2" />
+    <tile img="floor" pos="-1,10" flags="slope2" />
+		<tile img="floor" pos="0,10" flags="impassible" />
+		<tile img="floor" pos="1,10" flags="impassible" />
+		<tile img="floor" pos="2,10" flags="impassible" />
+		<tile img="floor" pos="3,10" flags="impassible" />
+		<tile img="floor_end_right" pos="4,10" flags="impassible" />
+		
+		<tile img="floor" pos="6,9" flags="" />
+		<tile img="floor" pos="6,8" flags="" />
+		
+		<tile img="floor" pos="5,11" flags="impassible" />
+		<tile img="floor" pos="6,11" flags="impassible" />
+		<tile img="floor" pos="7,11" flags="impassible" />
+		<tile img="floor" pos="8,11" flags="impassible" />
+		<tile img="floor_end_right" pos="9,11" flags="impassible" />
+
+    <tile img="floor" pos="5,7" flags="impassible" />
+    <tile img="floor" pos="6,7" flags="impassible" />
+    <tile img="floor" pos="7,7" flags="impassible" />
+    <tile img="floor" pos="8,7" flags="impassible" />
+    <tile img="floor_end_right" pos="9,7" flags="impassible" />
+	</data>
+
+</map>
