@@ -329,11 +329,6 @@ public class TiledLevel : MonoBehaviour
 					//check right corner
 					Rect ab = GetCharAABB(ps);
 					Rect temprect = this.CreateRect(i + minPosX, j + minPosY);
-
-					if (i + minPosX == -1)
-					{
-						Debug.Log(ab.xMax+ " "+temprect.xMin+";"+temprect.xMax);
-					}
 					
 					if (ab.xMax <= temprect.xMax && ab.xMax >= temprect.xMin)
 					{
@@ -342,6 +337,26 @@ public class TiledLevel : MonoBehaviour
 							(ab.yMin < temprect.yMax && ab.yMax >= temprect.yMax))
 						{
 							float diff = ab.yMax - (temprect.yMax-dix);
+							ps.Position = new Vector2(ps.Position.x, ps.Position.y - diff);
+							if (ps.Speed.y > 0 && diff > 0 || ps.Speed.y < 0 && diff < 0)
+								ps.Speed.y = 0;
+							if (diff > 0) ps.Grounded = true;
+						}
+					}
+				}
+				else if (obstacle == TileType.Slope1)
+				{
+					//check right corner
+					Rect ab = GetCharAABB(ps);
+					Rect temprect = this.CreateRect(i + minPosX, j + minPosY);
+
+					if (ab.xMin <= temprect.xMax && ab.xMin >= temprect.xMin)
+					{
+						float dix = temprect.xMax - ab.xMin;
+						if ((ab.yMax >= temprect.yMax - dix && ab.yMax <= temprect.yMax) ||
+							(ab.yMin < temprect.yMax && ab.yMax >= temprect.yMax))
+						{
+							float diff = ab.yMax - (temprect.yMax - dix);
 							ps.Position = new Vector2(ps.Position.x, ps.Position.y - diff);
 							if (ps.Speed.y > 0 && diff > 0 || ps.Speed.y < 0 && diff < 0)
 								ps.Speed.y = 0;
