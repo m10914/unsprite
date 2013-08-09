@@ -28,6 +28,10 @@
 		<tile img="floor" pos="1,10" flags="impassible" />
 		<tile img="floor" pos="2,10" flags="impassible" />
 		<tile img="floor" pos="3,10" flags="impassible" />
+    <tile img="floor" pos="0,6" flags="impassible" />
+    <tile img="floor" pos="1,6" flags="impassible" />
+    <tile img="floor" pos="2,6" flags="impassible" />
+    <tile img="floor" pos="3,6" flags="impassible" />
 		<tile img="floor_end_right" pos="4,10" flags="impassible" />
 		
 		<tile img="floor" pos="6,9" flags="" />

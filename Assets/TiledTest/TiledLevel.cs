@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Threading;
 using System.Xml.Linq;
 
 using Assets.TiledTest;
@@ -88,9 +90,25 @@ public class TiledLevel : MonoBehaviour
 		return new Rect(i * this.GlobalScale, j * this.GlobalScale, this.GlobalScale, this.GlobalScale);
 	}
 
-	private float DC(float coord)
+	private int DCD(float coord, bool countLast = true)
 	{
-		return (float)Math.Floor(coord / this.GlobalScale);
+		int res = (int)Math.Floor(coord / this.GlobalScale);
+		if (res == coord / this.GlobalScale && !countLast)
+		{
+			res -= 1; //if not rounded, then don't count last quad
+			//Debug.Log("NOT ROUNDEEED!");
+		}
+		return res;
+	}
+	private int DCU(float coord, bool countLast = true)
+	{
+		int res = (int)Math.Ceiling(coord / this.GlobalScale);
+		if (res == coord / this.GlobalScale && !countLast)
+		{
+			res += 1; //if not rounded, then don't count last quad
+			//Debug.Log("NOT ROUNDEEED!");
+		}
+		return res;
 	}
 
 	private Rect GetCharAABB(PhysxSprite ps)
@@ -291,6 +309,9 @@ public class TiledLevel : MonoBehaviour
 
 		float dx = ps.Speed.x * Time.deltaTime;
 		float dy = ps.Speed.y * Time.deltaTime + gravity * Time.deltaTime * Time.deltaTime / 2f;
+		float resDx = 0;
+		float resDy = 0;
+
 
 		if (Math.Abs(dx) > this.GlobalScale * 1f)
 		{
@@ -304,7 +325,216 @@ public class TiledLevel : MonoBehaviour
 		//set grounded false
 		ps.Grounded = false;
 
-		//first process all x-based movement
+
+		// new-way CCD
+	
+		// wanna move x by dx
+		Rect tempRect = this.GetCharAABB(ps);
+
+		if (dx != 0)
+		{
+			int limx;
+			int setx;
+			resDx = dx;
+
+			if (dx > 0)
+			{
+				setx = this.DCU(tempRect.xMin, false);
+				limx = this.DCD(tempRect.xMax + dx);	
+			}
+			else //dx < 0
+			{
+				setx = this.DCD(tempRect.xMax, false);
+				limx = this.DCD(tempRect.xMin + dx);
+			}
+
+			//Debug.Log("check x from " + setx + " to " + (limx - 1));
+
+			for (int i = setx; i != limx + Math.Sign(dx); i+= Math.Sign(dx))
+			{
+				for (int j = this.DCD(tempRect.yMin, false); j <= this.DCD(tempRect.yMax, false); j++)
+				{
+					//if there's an obstacle, stop at it immediately
+					TileType obstacle = this.GetObstacle(i, j);
+					if (obstacle == TileType.Brick)
+					{
+						Rect tpr = this.CreateRect(i, j);
+						float tempres = 0;
+
+						if (Math.Abs(tpr.xMin - tempRect.xMax) < Math.Abs(tpr.xMax - tempRect.xMin))
+						{
+							tempres = tpr.xMin - tempRect.xMax;
+						}
+						else
+						{
+							tempres = tpr.xMax - tempRect.xMin;
+						}
+
+						if ((Math.Sign(resDx) == Math.Sign(tempres) || tempres == 0) && Math.Abs(tempres) < Math.Abs(resDx))
+						{
+							resDx = tempres;
+							//Debug.Log(i + ";" + j + " pushed " + tempres + " (move) " + dx);
+						}
+						//else Debug.Log(i+";"+j+" tried to push "+tempres + " (move) " + dx);
+					}
+				}
+			}
+
+			this.hero.transform.Translate(resDx, 0, 0);
+			//Debug.Log("resdx " + resDx);
+		}
+
+
+		// wanna move y by dy
+		tempRect = this.GetCharAABB(ps);
+		
+		if (dy != 0)
+		{
+			bool bFound = false;
+			int limy;
+			int sety;
+
+			resDy = dy;
+
+			if (dy > 0)
+			{
+				sety = this.DCU(tempRect.yMin);
+				limy = this.DCD(tempRect.yMax + dy);
+			}
+			else
+			{
+				sety = this.DCD(tempRect.yMax, false);
+				limy = this.DCD(tempRect.yMin + dy);
+			}
+
+			//Debug.Log("check y from " + sety + " to " + (limy-1));
+
+			for (int i = sety; i != limy + Math.Sign(dy); i+= Math.Sign(dy))
+			{
+				for (int j = this.DCD(tempRect.xMin); j <= this.DCD(tempRect.xMax); j++)
+				{
+					//if there's an obstacle, stop at it immediately
+					TileType obstacle = this.GetObstacle(j, i);
+					if (obstacle == TileType.Brick)
+					{
+						float tempres = 0;
+
+						Rect tpr = this.CreateRect(j, i);
+						if (Math.Abs(tpr.yMin - tempRect.yMax) < Math.Abs(tpr.yMax - tempRect.yMin))
+						{
+							tempres = tpr.yMin - tempRect.yMax;
+						}
+						else
+						{
+							tempres = tpr.yMax - tempRect.yMin;
+						}
+
+						if ((Math.Sign(resDy) == Math.Sign(tempres) || tempres == 0) && Math.Abs(tempres) < Math.Abs(resDy))
+						{
+							bFound = true;
+							resDy = tempres;
+							//Debug.Log(i + ";" + j + " pushed " + tempres + " (move) " + dy);
+						}
+						//else Debug.Log(i+";"+j+" tried to push "+tempres + " (move) " + dy);
+					}
+				}
+			}
+
+			//Debug.Log("resy " + resDy + ", pos " + ps.Position.y);
+
+			this.hero.transform.Translate(0, resDy, 0);
+			if (resDy <= 0 && bFound)
+			{
+				ps.Grounded = true;
+			}
+			
+		}
+	}
+
+
+
+	private void Start()
+	{
+		this.InitLevel();
+		this.InitCharacters();
+	}
+
+	private void Update()
+	{
+		float gravity = 147.8f;
+
+		// set some variables
+		var sprman = Camera.main.GetComponent<SpritesManager>();
+		sprman.Sprites.ForEach(el => el.SetChromokey(163, 73, 164));
+
+		// run physics
+		var ps = this.hero.GetComponent<PhysxSprite>();
+		ps.SetChromokey(0, 67, 88);
+
+		if (!ps.Grounded)
+		{
+			ps.Speed.y += gravity * Time.deltaTime * this.GlobalScale;
+		}
+		else
+		{
+			ps.Speed.y = 0.1f; //just for penetration test
+		}
+
+		string currentAnimation = "Stand";
+
+		if (Input.GetKey(KeyCode.D))
+		{
+			currentAnimation = "Walk";
+			ps.bReflect = false;
+			ps.Speed.x = 1.8f * this.GlobalScale;
+		}
+		else if (Input.GetKey(KeyCode.A))
+		{
+			currentAnimation = "Walk";
+			ps.bReflect = true;
+			ps.Speed.x = -1.8f * this.GlobalScale;
+		}
+		else
+		{
+			ps.Speed.x = 0;
+		}
+
+		if (Input.GetKeyDown(KeyCode.Space) && ps.Grounded)
+		{
+			ps.Speed.y = -30f * this.GlobalScale;
+			ps.IsJumping = true;
+			ps.JumpingTime = 0;
+		}
+		else if (Input.GetKey(KeyCode.Space) && ps.IsJumping)
+		{
+			ps.JumpingTime += Time.deltaTime;
+			if (ps.JumpingTime > 0.1)
+			{
+				ps.IsJumping = false;
+			}
+			else
+			{
+				ps.Speed.y = -30f * this.GlobalScale;
+			}
+		}
+		else
+		{
+			ps.IsJumping = false;
+		}
+
+		//set animation
+		ps.PlayAnimationIfNotTheSame(currentAnimation);
+
+		// CD and resolving
+		this.CollisionDetection();
+	}
+
+	#endregion
+
+
+
+	/*
+	 //first process all x-based movement
 		this.hero.transform.Translate(dx, 0, 0);
 
 		for (int i = 0; i < this.physx.GetLength(0); i++)
@@ -425,83 +655,5 @@ public class TiledLevel : MonoBehaviour
 				}
 			}
 		}
-	}
-
-	private void Start()
-	{
-		this.InitLevel();
-		this.InitCharacters();
-	}
-
-	private void Update()
-	{
-		float gravity = 147.8f;
-
-		// set some variables
-		var sprman = Camera.main.GetComponent<SpritesManager>();
-		sprman.Sprites.ForEach(el => el.SetChromokey(163, 73, 164));
-
-		// run physics
-		var ps = this.hero.GetComponent<PhysxSprite>();
-		ps.SetChromokey(0, 67, 88);
-
-		if (!ps.Grounded)
-		{
-			ps.Speed.y += gravity * Time.deltaTime * this.GlobalScale;
-		}
-		else
-		{
-			ps.Speed.y = 0.1f; //just for penetration test
-		}
-
-		string currentAnimation = "Stand";
-
-		if (Input.GetKey(KeyCode.D))
-		{
-			currentAnimation = "Walk";
-			ps.bReflect = false;
-			ps.Speed.x = 1.8f * this.GlobalScale;
-		}
-		else if (Input.GetKey(KeyCode.A))
-		{
-			currentAnimation = "Walk";
-			ps.bReflect = true;
-			ps.Speed.x = -1.8f * this.GlobalScale;
-		}
-		else
-		{
-			ps.Speed.x = 0;
-		}
-
-		if (Input.GetKeyDown(KeyCode.Space) && ps.Grounded)
-		{
-			ps.Speed.y = -30f * this.GlobalScale;
-			ps.IsJumping = true;
-			ps.JumpingTime = 0;
-		}
-		else if (Input.GetKey(KeyCode.Space) && ps.IsJumping)
-		{
-			ps.JumpingTime += Time.deltaTime;
-			if (ps.JumpingTime > 0.1)
-			{
-				ps.IsJumping = false;
-			}
-			else
-			{
-				ps.Speed.y = -30f * this.GlobalScale;
-			}
-		}
-		else
-		{
-			ps.IsJumping = false;
-		}
-
-		//set animation
-		ps.PlayAnimationIfNotTheSame(currentAnimation);
-
-		// CD and resolving
-		this.CollisionDetection();
-	}
-
-	#endregion
+	 */
 }
