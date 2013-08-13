@@ -12,6 +12,11 @@
 
 		public bool Grounded;
 
+		public bool bOnLadder;
+
+		public bool bInWater;
+
+
 		public bool IsJumping;
 		public float JumpingTime;
 

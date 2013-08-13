@@ -36,6 +36,9 @@
 
 		private float texStep = 0;
 
+		public Vector4 chromokey = Vector4.zero;
+
+
 		#endregion
 
 		#region Public Properties
@@ -88,7 +91,7 @@
 		{
 			get
 			{
-				return (uint)Math.Ceiling(1d / this.sizes.x);
+				return (uint)Math.Ceiling(1f / this.sizes.x);
 			}
 		}
 
@@ -108,7 +111,7 @@
 		public void SetChromokey(float r, float g, float b)
 		{
 			//setup chromokey as purple
-			this.Material.SetVector("_ChromoKey", new Vector4(r, g, b, 0));
+			chromokey = new Vector4(r, g, b, 0);
 		}
 
 		public void SetChromokey(byte r, byte g, byte b)
@@ -137,7 +140,7 @@
 		/// <param name="cols"></param>
 		public void CreateAnimationFrames(uint rows, uint cols)
 		{
-			this.sizes = new Vector2(1f / cols, 1f / rows);
+			this.sizes = new Vector2(1f / (float)cols, 1f / (float)rows);
 		}
 
 		public void CreateQuadAtlas(uint quadSizeInPixels)
@@ -312,6 +315,7 @@
 				var widthInQuads = (uint)(tex.width / this.quadAtlasSize);
 
 				this.CreateAnimationFrames(heightInQuads, widthInQuads);
+				//Debug.Log(heightInQuads + " " + widthInQuads);
 			}
 
 

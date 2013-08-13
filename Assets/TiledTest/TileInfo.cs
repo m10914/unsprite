@@ -1,8 +1,32 @@
 ﻿namespace Assets.TiledTest
 {
+	using System;
+
+
+	public enum TileType : uint
+	{
+		None = 0,
+
+		Brick,
+
+		Slope1,
+
+		Slope2,
+
+		Slope3,
+
+		Slope4,
+
+		Water,
+
+		Ladder
+	}
+
+
+	[Serializable]
 	public class TileInfo
 	{
-		public string Name;
+		public static uint instocount = 0 ;
 
 		public string AtlasName;
 
@@ -10,12 +34,18 @@
 
 		public uint PosY;
 
-		public TileInfo(string name, string atlasName, uint posX, uint posY)
+		public TileType Type;
+
+		public uint ID;
+
+		public TileInfo(string atlasName, uint posX, uint posY, TileType type)
 		{
-			this.Name = name;
+			this.ID = instocount++;
+
 			this.AtlasName = atlasName;
 			this.PosX = posX;
 			this.PosY = posY;
+			this.Type = type;
 		}
 	}
 }

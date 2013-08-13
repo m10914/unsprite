@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<data>
+
+  <header>
+    <!-- some map headers -->
+  </header>
+
+  <prefabs>
+    <p>
+      <e tile="0,0" img="atlas1,0,0" type="impassible" />
+      <e tile="1,0" img="atlas1,0,0" type="impassible" />
+      <e tile="2,0" img="atlas1,0,0" type="impassible" />
+    </p>
+    <p>
+      <e tile="0,0" img="atlas1,0,0" type="impassible" />
+      <e tile="0,1" img="atlas1,0,0" type="impassible" />
+    </p>
+  </prefabs>
+
+</data>

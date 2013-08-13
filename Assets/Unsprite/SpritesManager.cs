@@ -97,8 +97,15 @@ public class SpritesManager : MonoBehaviour
 		//begin render
 		GL.PushMatrix();
 
-		foreach (var spr in this.Sprites)
+		foreach (var spr in this.Sprites.ToArray())
 		{
+			if (spr == null)
+			{
+				this.Sprites.Remove(spr);
+				continue;
+			}
+
+			spr.Material.SetVector("_ChromoKey", spr.chromokey);
 			Material tempmat = spr.Material;
 			tempmat.SetPass(0);
 
