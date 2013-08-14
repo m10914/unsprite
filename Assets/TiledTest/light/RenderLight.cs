@@ -12,10 +12,13 @@ public class RenderLight : MonoBehaviour
 	#region Fields
 
 	public Shader LightShader;
+	public Shader DarkShader;
 
 	public List<Vector2> pointArray = new List<Vector2>();
 
 	private Material mat;
+
+	private Material darkMat;
 
 	#endregion
 
@@ -29,6 +32,8 @@ public class RenderLight : MonoBehaviour
 	private void ConstructAndDrawLightCone(Lightsource light)
 	{
 		this.mat.SetVector("_Colour", new Vector4(1, 1, 1, 1));
+		this.mat.SetVector("_LightPos", new Vector4(light.Point.x, light.Point.y, 0, 0));
+		this.mat.SetFloat("_MaxDist", light.MaxRadius);
 		this.mat.SetPass(0);
 
 		GL.Begin(GL.TRIANGLES);
@@ -153,25 +158,25 @@ public class RenderLight : MonoBehaviour
 
 		//drawing itself
 
-		this.mat.SetVector("_Colour", new Vector4(0, 0, 0, 1));
-		this.mat.SetPass(0);
+		this.darkMat.SetVector("_Colour", new Vector4(0, 0, 0, 1));
+		this.darkMat.SetPass(0);
 		GL.Begin(GL.TRIANGLES);
 
 		UnoVert leftVert = smalllist.First();
 		UnoVert rightVert = smalllist.Last();
 
 		var leftVol = new Vector3(
-			light.Point.x + light.MaxRadius * (float)Math.Cos(leftVert.angOffset),
-			light.Point.y + light.MaxRadius * (float)Math.Sin(leftVert.angOffset),
+			light.Point.x + (light.MaxRadius + 10f) * (float)Math.Cos(leftVert.angOffset),
+			light.Point.y + (light.MaxRadius + 10f) * (float)Math.Sin(leftVert.angOffset),
 			0);
 		var rightVol = new Vector3(
-			light.Point.x + light.MaxRadius * (float)Math.Cos(rightVert.angOffset),
-			light.Point.y + light.MaxRadius * (float)Math.Sin(rightVert.angOffset),
+			light.Point.x + (light.MaxRadius + 10f) * (float)Math.Cos(rightVert.angOffset),
+			light.Point.y + (light.MaxRadius + 10f) * (float)Math.Sin(rightVert.angOffset),
 			0);
 		Vector3 leftFront = leftVert.GetVec3();
 		Vector3 rightFront = rightVert.GetVec3();
 
-		if (tilePos.x == 160 && tilePos.y == 40)
+		/*if (tilePos.x == 160 && tilePos.y == 40)
 		{
 			Debug.Log("damaged: " + leftVert.angOffset + " > " + rightVert.angOffset);
 			//Debug.Log("totalCount : " + smalllist.Count() + ", leftvol: " + leftVol.x + ",  " + leftVol.y + ", rightVol: " + rightVol.x + ",  " + rightVol.y);
@@ -180,7 +185,7 @@ public class RenderLight : MonoBehaviour
 		else if (tilePos.x == 160 && tilePos.y == 30)
 		{
 			Debug.Log("normal: " + leftVert.angOffset + " > " + rightVert.angOffset);
-		}
+		}*/
 		//Debug.Log(tilePos.ToString());
 
 		//little bit further
@@ -337,6 +342,7 @@ public class RenderLight : MonoBehaviour
 	private void Start()
 	{
 		this.mat = new Material(this.LightShader);
+		this.darkMat = new Material(this.DarkShader);
 	}
 
 	#endregion

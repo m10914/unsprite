@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{ED75214A-8B02-0128-A52A-40793902A21B}</ProjectGuid>
+    <ProjectGuid>{83A6FD63-2370-809F-CE65-E02BEEF2E752}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace></RootNamespace>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Assembly-UnityScript-firstpass</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{84365F2C-1DDE-431A-8C14-179ADC971E4D};{1FAC5C55-277D-4884-94A4-83DBDAF57E56}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
@@ -50,27 +50,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="UnityVS.Unsprite.UnityScript.Plugins.unityproj">
-      <Project>{83A6FD63-2370-809F-CE65-E02BEEF2E752}</Project>
-      <Name>UnityVS.Unsprite.UnityScript.Plugins</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityVS.Unsprite.CSharp.Plugins.csproj">
-      <Project>{E5484F9F-BAD5-5250-1D94-FBC251F06AC9}</Project>
-      <Name>UnityVS.Unsprite.CSharp.Plugins</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\loader.cs" />
-    <Compile Include="Assets\TiledTest\cameraadvances\DisplayGridlines.cs" />
-    <Compile Include="Assets\TiledTest\light\Lightsource.cs" />
-    <Compile Include="Assets\TiledTest\light\PostEffectLighting.cs" />
-    <Compile Include="Assets\TiledTest\light\RenderLight.cs" />
-    <Compile Include="Assets\TiledTest\PhysxSprite.cs" />
-    <Compile Include="Assets\TiledTest\TiledLevel.cs" />
-    <Compile Include="Assets\TiledTest\TileInfo.cs" />
-    <Compile Include="Assets\Unsprite\Sprite.cs" />
-    <Compile Include="Assets\Unsprite\SpriteAnimationData.cs" />
-    <Compile Include="Assets\Unsprite\SpritesManager.cs" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\AmbientObscurance.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\AntialiasingAsPostEffect.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Bloom.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\BloomAndLensFlares.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Blur.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\CameraMotionBlur.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\ColorCorrectionCurves.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\ColorCorrectionLut.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\ContrastEnhance.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Crease.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\DepthOfField34.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\DepthOfFieldScatter.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\EdgeDetectEffectNormals.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\FastBloom.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Fisheye.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\GlobalFog.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\NoiseAndGrain.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\PostEffectsBase.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\PostEffectsHelper.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Quads.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\ScreenOverlay.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\SunShafts.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\TiltShiftHdr.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Tonemapping.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Triangles.js" />
+    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Vignetting.js" />
     <None Include="Assets\Resources\map.xml" />
     <None Include="Assets\Resources\prefabs.xml" />
     <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_Antialiasing\DLAA.shader" />
@@ -148,6 +153,24 @@
     <None Include="Assets\TiledTest\light\PostEffectLighting.shader" />
     <None Include="Assets\TiledTest\light\RenderLightShader.shader" />
     <None Include="Assets\Unsprite\SpritesShader.shader" />
+    <None Include="Assets\Plugins\System.Xml.Linq.dll" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2012\UnityVS.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Assets" />
+    <Folder Include="Assets\Plugins" />
+    <Folder Include="Assets\Resources" />
+    <Folder Include="Assets\Standard Assets" />
+    <Folder Include="Assets\Standard Assets\Image Effects (Pro Only)" />
+    <Folder Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources" />
+    <Folder Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders" />
+    <Folder Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_Antialiasing" />
+    <Folder Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_BloomAndFlares" />
+    <Folder Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_DepthOfField" />
+    <Folder Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\Contrast Stretch" />
+    <Folder Include="Assets\TiledTest" />
+    <Folder Include="Assets\TiledTest\cameraadvances" />
+    <Folder Include="Assets\TiledTest\light" />
+    <Folder Include="Assets\Unsprite" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2012\UnityVS.UnityScript.targets" />
 </Project>

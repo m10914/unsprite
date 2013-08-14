@@ -755,7 +755,7 @@ public class TiledLevel : MonoBehaviour
 		float resDx = 0;
 		float resDy = 0;
 
-		Debug.Log(dy);
+		//Debug.Log(dy);
 
 		if (Math.Abs(dx) > this.GlobalScale * 1f)
 		{
@@ -975,6 +975,12 @@ public class TiledLevel : MonoBehaviour
 			//camera follow hero
 			Camera.main.transform.position = new Vector3(hero.transform.position.x, hero.transform.position.y, Camera.main.transform.position.z);
 		}
+
+
+
+		GameObject.Find("LightCam").transform.position = Camera.main.transform.position;
+		GameObject.Find("LightCam").transform.rotation = Camera.main.transform.rotation;
+		(GameObject.Find("LightCam").GetComponent<Camera>()).orthographicSize = Camera.main.orthographicSize;
 	}
 
 	#endregion
@@ -1015,8 +1021,7 @@ public class TiledLevel : MonoBehaviour
 	{
 		this.ExtendSizesOfField(picked);
 
-
-		Debug.Log(picked);
+		//Debug.Log(picked);
 
 		//delete old if exists
 		this.DeleteSprite(this.Tiles[(int)picked.x][(int)picked.y]);
