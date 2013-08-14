@@ -52,6 +52,8 @@
   <ItemGroup>
     <Compile Include="Assets\loader.cs" />
     <Compile Include="Assets\TiledTest\cameraadvances\DisplayGridlines.cs" />
+    <Compile Include="Assets\TiledTest\cameraadvances\RenderLight.cs" />
+    <Compile Include="Assets\TiledTest\light\Lightsource.cs" />
     <Compile Include="Assets\TiledTest\PhysxSprite.cs" />
     <Compile Include="Assets\TiledTest\TiledLevel.cs" />
     <Compile Include="Assets\TiledTest\TileInfo.cs" />
@@ -62,6 +64,7 @@
     <None Include="Assets\Resources\prefabs.xml" />
     <None Include="Assets\TiledTest\cameraadvances\DisplayGridlines.shader" />
     <None Include="Assets\TiledTest\cameraadvances\DisplayPhysx.shader" />
+    <None Include="Assets\TiledTest\cameraadvances\RenderLightShader.shader" />
     <None Include="Assets\Unsprite\SpritesShader.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2012\UnityVS.CSharp.targets" />

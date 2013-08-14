@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 
 using Assets.TiledTest;
+using Assets.TiledTest.light;
 using Assets.Unsprite;
 
 using UnityEngine;
@@ -20,6 +21,13 @@ public class TiledLevel : MonoBehaviour
 
 	//level description
 	public List<List<TileInfo>> Tiles;
+
+	public List<Lightsource> Lights 
+		= new List<Lightsource>()
+	    {
+		    new Lightsource(new Vector2(50, 50), 200, (float)(Math.PI/3), (float)(Math.PI / 4f))
+	    };
+
 
 	//other stuff
 	public float GlobalScale = 10f;
@@ -181,7 +189,7 @@ public class TiledLevel : MonoBehaviour
 	private void InitAtlas()
 	{
 		atlasTexture = Resources.Load("Atlases/test") as Texture;
-		physxTexture = Resources.Load("Atlases/AxeBattler") as Texture;
+		physxTexture = Resources.Load("Atlases/physics") as Texture;
 	}
 
 	/// <summary>
@@ -951,7 +959,13 @@ public class TiledLevel : MonoBehaviour
 		//right mouse down
 		if (Input.GetMouseButton(1))
 		{
-			//TODO: WAAAT?
+			Lightsource light = Lights[0];
+			Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+			//direct light
+			light.Angle = (float)Math.Atan2(mouseWorld.y - light.Point.y, mouseWorld.x - light.Point.x);
+			light.MaxRadius = (new Vector2(mouseWorld.x, mouseWorld.y) - light.Point).magnitude;
+			if (light.Angle < 0) light.Angle += (float)Math.PI * 2f;
 		}
 
 
