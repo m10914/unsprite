@@ -40,8 +40,12 @@ public class RenderLight : MonoBehaviour
 		GL.Begin(GL.TRIANGLES);
 
 		float step = (float)Math.PI / 20f;
-		for (float ang = light.Angle - light.AngleRange; ang <= light.Angle + light.AngleRange; ang += step)
+		int steps = (int)(light.AngleRange * 2f / step);
+		int i = 0;
+		for (float ang = light.Angle - light.AngleRange; ; ang += step)
 		{
+			if (i++ >= steps) break;
+
 			var left = new Vector2((float)(light.MaxRadius * Math.Cos(ang)), (float)(light.MaxRadius * Math.Sin(ang)));
 			var right = new Vector2(
 				(float)(light.MaxRadius * Math.Cos(ang + step)),
