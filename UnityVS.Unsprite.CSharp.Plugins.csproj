@@ -136,9 +136,9 @@
     <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\VortexEffect.shader" />
     <None Include="Assets\TiledTest\cameraadvances\DisplayGridlines.shader" />
     <None Include="Assets\TiledTest\cameraadvances\DisplayPhysx.shader" />
-    <None Include="Assets\TiledTest\light\DarkShader.shader" />
     <None Include="Assets\TiledTest\light\PostEffectLighting.shader" />
-    <None Include="Assets\TiledTest\light\RenderLightShader.shader" />
+    <None Include="Assets\TiledTest\renderlight\DarkShader.shader" />
+    <None Include="Assets\TiledTest\renderlight\RenderLightShader.shader" />
     <None Include="Assets\Unsprite\SpritesShader.shader" />
     <None Include="Assets\Plugins\System.Xml.Linq.dll" />
   </ItemGroup>

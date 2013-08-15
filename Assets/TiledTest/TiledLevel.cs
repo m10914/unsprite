@@ -22,24 +22,24 @@ public class TiledLevel : MonoBehaviour
 	//level description
 	public List<List<TileInfo>> Tiles;
 
-	public List<Lightsource> Lights 
-		= new List<Lightsource>()
-	    {
-		    new Lightsource(new Vector2(50, 50), 200, (float)(Math.PI/3), (float)(Math.PI / 4f))
-	    };
+	public List<Lightsource> Lights;
 
 
 	//other stuff
 	public float GlobalScale = 10f;
+
 	private GameObject hero;
 
 	public uint Mode = 0; //0 for tile, 1 for physx
 
-	float QuadSize = 32;
+	private float QuadSize = 32;
 
 	private Vector2 atlasOffset = new Vector2(10, 80);
+
 	private Vector2 atlasSize = new Vector2(300, 300);
+
 	private Texture atlasTexture;
+
 	private Vector2 pickedTile = new Vector2(0, 0);
 
 	private Texture physxTexture;
@@ -48,9 +48,52 @@ public class TiledLevel : MonoBehaviour
 
 	private bool bPlaymode = false;
 
+
+	public Shader DarkShader;
+	public Shader LightShader;
+
+	public RenderTexture TargetTexture;
+
 	#endregion
 
 	#region Methods
+
+
+	/// <summary>
+	/// adds light source with it's own camera
+	/// </summary>
+	/// <param name="pos"></param>
+	/// <param name="maxRadius"></param>
+	/// <param name="initAngle"></param>
+	/// <param name="angleRange"></param>
+	private void AddLightCone(Vector2 pos, float maxRadius, float initAngle, float angleRange)
+	{
+		LightCone nlc = new LightCone(pos, maxRadius, initAngle, angleRange);
+		Lights.Add(nlc);
+
+		GameObject nc = new GameObject();
+		Camera cam = nc.AddComponent<Camera>();
+		cam.tag = "lightcam";
+		cam.orthographic = true;
+		cam.backgroundColor = new Color(0,0,0,0);
+		cam.name = "lightcam";
+		cam.aspect = (float)Screen.width/(float)Screen.height;
+		cam.depth = 10; //after main, but before post
+
+		RenderLight rl = nc.AddComponent<RenderLight>();
+		rl.RenderTexture = new RenderTexture(Screen.width, Screen.height, 16);
+		rl.DarkShader = DarkShader;
+		rl.LightShader = LightShader;
+		rl.ParentLight = nlc;
+
+		cam.targetTexture = rl.RenderTexture;
+
+		//this is my customized blur shader, which is now capable to work with c#
+		Component blur = nc.AddComponent("Blur");
+		blur.SendMessage("SetBlurShader", Shader.Find("Hidden/FastBlur"));
+
+		nlc.renderCamera = cam;
+	}
 
 
 	/// <summary>
@@ -76,6 +119,7 @@ public class TiledLevel : MonoBehaviour
 		}
 		return res;
 	}
+
 	private int DCU(float coord, bool countLast = true)
 	{
 		int res = (int)Math.Ceiling(coord / this.GlobalScale);
@@ -92,7 +136,7 @@ public class TiledLevel : MonoBehaviour
 			ps.Position.x + this.GlobalScale / 2f,
 			ps.Position.y,
 			this.GlobalScale * ps.Size.x - this.GlobalScale,
-			this.GlobalScale * ps.Size.y - this.GlobalScale*0.2f);
+			this.GlobalScale * ps.Size.y - this.GlobalScale * 0.2f);
 		return aabb;
 	}
 
@@ -131,7 +175,7 @@ public class TiledLevel : MonoBehaviour
 
 		//setup default animation (no need actually)
 		spr.PlayAnimation("Stand");
-		spr.SetChromokey(0,67,88);
+		spr.SetChromokey(0, 67, 88);
 	}
 
 
@@ -141,8 +185,8 @@ public class TiledLevel : MonoBehaviour
 	private void RespawnCharacter()
 	{
 		var spr = hero.GetComponent<PhysxSprite>();
-		spr.Position = new Vector2(0,0);
-		spr.Speed = new Vector2(0,0);
+		spr.Position = new Vector2(0, 0);
+		spr.Speed = new Vector2(0, 0);
 	}
 
 
@@ -196,7 +240,7 @@ public class TiledLevel : MonoBehaviour
 	/// afterload init
 	/// </summary>
 	private void InitLevel()
-	{	
+	{
 		int i, j;
 
 		// afterload optimization
@@ -207,7 +251,7 @@ public class TiledLevel : MonoBehaviour
 			for (j = 0; j < this.Tiles[i].Count; j++)
 			{
 				TileInfo inf = this.Tiles[i][j];
-				this.CreateNewSprite(inf, new Vector2(i * this.GlobalScale, j * this.GlobalScale));	
+				this.CreateNewSprite(inf, new Vector2(i * this.GlobalScale, j * this.GlobalScale));
 			}
 		}
 	}
@@ -228,7 +272,7 @@ public class TiledLevel : MonoBehaviour
 
 		sprite.SetTexture("Atlases/" + inf.AtlasName);
 		sprite.CreateQuadAtlas((uint)QuadSize);
-		sprite.SetTile(inf.PosX + inf.PosY*8);
+		sprite.SetTile(inf.PosX + inf.PosY * 8);
 		sprite.Scale = new Vector2(this.GlobalScale, this.GlobalScale);
 		sprite.Position = pos;
 		sprite.Layer = -100f;
@@ -237,12 +281,11 @@ public class TiledLevel : MonoBehaviour
 
 	private void DeleteSprite(TileInfo inf)
 	{
-		DestroyImmediate(GameObject.Find("tile_"+inf.ID));
+		DestroyImmediate(GameObject.Find("tile_" + inf.ID));
 	}
 
 	private void ClearTiles()
 	{
-		GameObject todelete;
 		int i, j;
 
 		for (i = 0; i < this.Tiles.Count; i++)
@@ -253,7 +296,7 @@ public class TiledLevel : MonoBehaviour
 				this.DeleteSprite(inf);
 			}
 		}
-		
+
 	}
 
 
@@ -321,7 +364,7 @@ public class TiledLevel : MonoBehaviour
 
 		// if movement happened
 		if (dx != 0)
-		{	
+		{
 			resDx = dx;
 			resDy = 0;
 
@@ -529,7 +572,7 @@ public class TiledLevel : MonoBehaviour
 		if (dy != 0)
 		{
 			bool bFound = false;
-			
+
 			resDy = dy;
 			resDx = 0;
 
@@ -593,11 +636,12 @@ public class TiledLevel : MonoBehaviour
 							//Debug.Log(shouldbe + " > " + charRect.yMax);
 							//Debug.Log("wanted to move to " + resDy + ", but dist to slope is " + tempres);
 
-							if ((Math.Sign(resDy) == Math.Sign(tempres) || (tempres == 0 && resDy > 0)) && Math.Abs(tempres) < Math.Abs(resDy) && dy > 0)
+							if ((Math.Sign(resDy) == Math.Sign(tempres) || (tempres == 0 && resDy > 0))
+							    && Math.Abs(tempres) < Math.Abs(resDy) && dy > 0)
 							{
 								bFound = true;
 								resDy = tempres;
-								ps.Grounded = true;		
+								ps.Grounded = true;
 							}
 						}
 					}
@@ -624,7 +668,8 @@ public class TiledLevel : MonoBehaviour
 							//Debug.Log(shouldbe + " > " + charRect.yMax);
 							//Debug.Log("wanted to move to " + resDy + ", but dist to slope is " + tempres);
 
-							if ((Math.Sign(resDy) == Math.Sign(tempres) || (tempres == 0 && resDy > 0)) && Math.Abs(tempres) < Math.Abs(resDy) && dy > 0)
+							if ((Math.Sign(resDy) == Math.Sign(tempres) || (tempres == 0 && resDy > 0))
+							    && Math.Abs(tempres) < Math.Abs(resDy) && dy > 0)
 							{
 								bFound = true;
 								resDy = tempres;
@@ -655,7 +700,8 @@ public class TiledLevel : MonoBehaviour
 							//Debug.Log(shouldbe + " > " + charRect.yMax);
 							//Debug.Log("wanted to move to " + resDy + ", but dist to slope is " + tempres);
 
-							if ((Math.Sign(resDy) == Math.Sign(tempres) || (tempres == 0 && resDy < 0)) && Math.Abs(tempres) < Math.Abs(resDy) && dy < 0)
+							if ((Math.Sign(resDy) == Math.Sign(tempres) || (tempres == 0 && resDy < 0))
+							    && Math.Abs(tempres) < Math.Abs(resDy) && dy < 0)
 							{
 								bFound = true;
 								resDy = tempres;
@@ -685,7 +731,8 @@ public class TiledLevel : MonoBehaviour
 							//Debug.Log(shouldbe + " > " + charRect.yMax);
 							//Debug.Log("wanted to move to " + resDy + ", but dist to slope is " + tempres);
 
-							if ((Math.Sign(resDy) == Math.Sign(tempres) || (tempres == 0 && resDy < 0)) && Math.Abs(tempres) < Math.Abs(resDy) && dy < 0)
+							if ((Math.Sign(resDy) == Math.Sign(tempres) || (tempres == 0 && resDy < 0))
+							    && Math.Abs(tempres) < Math.Abs(resDy) && dy < 0)
 							{
 								bFound = true;
 								resDy = tempres;
@@ -708,7 +755,7 @@ public class TiledLevel : MonoBehaviour
 			{
 				ps.Grounded = true;
 			}
-			else if(dy < 0 && resDy > dy && bFound)
+			else if (dy < 0 && resDy > dy && bFound)
 			{
 				ps.IsJumping = false;
 				if (ps.Speed.y < 0) ps.Speed.y = 0;
@@ -742,8 +789,6 @@ public class TiledLevel : MonoBehaviour
 	/// <param name="ps"></param>
 	private void ResolveCollisions(PhysxSprite ps)
 	{
-		float gravity = 207.8f;
-
 		//cap speed
 		if (ps.Speed.y > 30f * this.GlobalScale)
 		{
@@ -752,8 +797,7 @@ public class TiledLevel : MonoBehaviour
 
 		float dx = ps.Speed.x * Time.deltaTime;
 		float dy = ps.Speed.y * Time.deltaTime;
-		float resDx = 0;
-		float resDy = 0;
+
 
 		//Debug.Log(dy);
 
@@ -782,11 +826,20 @@ public class TiledLevel : MonoBehaviour
 	/// </summary>
 	private void Start()
 	{
+		TargetTexture = new RenderTexture(Screen.width, Screen.height, 16);
+		Camera.main.targetTexture = TargetTexture;
+
 		this.Tiles = new List<List<TileInfo>>();
+		this.Lights = new List<Lightsource>();
+
 		this.InitAtlas();
 
 		this.InitLevel();
 		this.InitCharacters();
+
+		//init lights
+		this.AddLightCone(new Vector2(170, -30), 100, (float)(Math.PI / 2), (float)(Math.PI / 4f));
+		this.AddLightCone(new Vector2(40, 0), 100, (float)(Math.PI / 2), (float)(Math.PI / 4f));
 	}
 
 
@@ -812,7 +865,7 @@ public class TiledLevel : MonoBehaviour
 		}
 		if (ps.bInWater)
 		{
-			ps.Speed.y += gravity/15f * Time.deltaTime * this.GlobalScale;
+			ps.Speed.y += gravity / 15f * Time.deltaTime * this.GlobalScale;
 		}
 		else ps.Speed.y += gravity * Time.deltaTime * this.GlobalScale;
 		//no gravity on ladder
@@ -912,7 +965,7 @@ public class TiledLevel : MonoBehaviour
 
 				//atlas pick
 				if (Input.mousePosition.x < atlasOffset.x + atlasSize.x && Input.mousePosition.x > atlasOffset.x
-					&& mpy < atlasOffset.y + atlasSize.y && mpy > atlasOffset.y)
+				    && mpy < atlasOffset.y + atlasSize.y && mpy > atlasOffset.y)
 				{
 					float textureStep = QuadSize * atlasSize.x / atlasTexture.width;
 					pickedTile = new Vector2(
@@ -922,9 +975,9 @@ public class TiledLevel : MonoBehaviour
 					this.Mode = 0;
 				}
 
-				//physx pick
+					//physx pick
 				else if (Input.mousePosition.x < atlasOffset.x + atlasSize.x && Input.mousePosition.x > atlasOffset.x
-					&& mpy > atlasOffset.y + atlasSize.y + 10 && mpy < atlasOffset.y + atlasSize.y + 60)
+				         && mpy > atlasOffset.y + atlasSize.y + 10 && mpy < atlasOffset.y + atlasSize.y + 60)
 				{
 					float textureStep = atlasSize.x / 8f;
 					pickedPhysx = (uint)Math.Floor((Input.mousePosition.x - this.atlasOffset.x) / textureStep);
@@ -933,12 +986,12 @@ public class TiledLevel : MonoBehaviour
 				}
 
 			}
-			//click field
+				//click field
 			else
 			{
 				//worldspace coordinates
 				Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-				
+
 				Vector2 picked = new Vector2(
 					x: (float)Math.Floor(mouseWorld.x / this.GlobalScale),
 					y: (float)Math.Floor(mouseWorld.y / this.GlobalScale));
@@ -959,7 +1012,7 @@ public class TiledLevel : MonoBehaviour
 		//right mouse down
 		if (Input.GetMouseButton(1))
 		{
-			Lightsource light = Lights[0];
+			LightCone light = Lights[0] as LightCone;
 			Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
 			//direct light
@@ -973,14 +1026,21 @@ public class TiledLevel : MonoBehaviour
 		{
 			this.UpdateControls();
 			//camera follow hero
-			Camera.main.transform.position = new Vector3(hero.transform.position.x, hero.transform.position.y, Camera.main.transform.position.z);
+			Camera.main.transform.position = new Vector3(
+				hero.transform.position.x,
+				hero.transform.position.y,
+				Camera.main.transform.position.z);
 		}
 
 
+		GameObject[] lightcams = GameObject.FindGameObjectsWithTag("lightcam");
+		foreach (var cam in lightcams)
+		{
+			cam.transform.position = Camera.main.transform.position;
+			cam.transform.rotation = Camera.main.transform.rotation;
+			(cam.GetComponent<Camera>()).orthographicSize = Camera.main.orthographicSize;
+		}
 
-		GameObject.Find("LightCam").transform.position = Camera.main.transform.position;
-		GameObject.Find("LightCam").transform.rotation = Camera.main.transform.rotation;
-		(GameObject.Find("LightCam").GetComponent<Camera>()).orthographicSize = Camera.main.orthographicSize;
 	}
 
 	#endregion
@@ -1007,7 +1067,7 @@ public class TiledLevel : MonoBehaviour
 			{
 				TileInfo inf = new TileInfo("test", 0, 0, TileType.None);
 				this.Tiles[j].Add(inf);
-				this.CreateNewSprite(inf, new Vector2(j * GlobalScale, (i+1) * GlobalScale));
+				this.CreateNewSprite(inf, new Vector2(j * GlobalScale, (i + 1) * GlobalScale));
 			}
 		}
 	}
@@ -1029,8 +1089,11 @@ public class TiledLevel : MonoBehaviour
 		//create new one
 		TileInfo inf = new TileInfo("test", (uint)this.pickedTile.x, (uint)this.pickedTile.y, TileType.None);
 		this.Tiles[(int)picked.x][(int)picked.y] = inf;
-		this.CreateNewSprite(this.Tiles[(int)picked.x][(int)picked.y], new Vector2(picked.x * GlobalScale, picked.y * GlobalScale));
+		this.CreateNewSprite(
+			this.Tiles[(int)picked.x][(int)picked.y],
+			new Vector2(picked.x * GlobalScale, picked.y * GlobalScale));
 	}
+
 	public void SetTilePhysics(Vector2 picked)
 	{
 		//check if exists
@@ -1047,8 +1110,7 @@ public class TiledLevel : MonoBehaviour
 	/// </summary>
 	public void OnGUI()
 	{
-		if(hero.GetComponent<PhysxSprite>().Grounded == true)
-			GUI.Box(new Rect(360, 10, 10, 10), "G");
+		if (hero.GetComponent<PhysxSprite>().Grounded == true) GUI.Box(new Rect(360, 10, 10, 10), "G");
 
 		GUI.Box(new Rect(0, 0, 330, Screen.height), "Editor menu");
 
@@ -1081,22 +1143,32 @@ public class TiledLevel : MonoBehaviour
 				this.bPlaymode = false;
 			}
 		}
-		
+
 
 		//show atlas
-		GUI.DrawTexture(new Rect(this.atlasOffset.x, this.atlasOffset.y, atlasSize.x, atlasSize.y), atlasTexture, ScaleMode.ScaleToFit);
+		GUI.DrawTexture(
+			new Rect(this.atlasOffset.x, this.atlasOffset.y, atlasSize.x, atlasSize.y),
+			atlasTexture,
+			ScaleMode.ScaleToFit);
 
 		//show selected texture
 		float texstepx = QuadSize / atlasTexture.width;
 		float texstepy = -QuadSize / atlasTexture.height;
-		GUI.DrawTextureWithTexCoords(new Rect(260, 20, 50, 50), atlasTexture, new Rect(pickedTile.x * texstepx, (pickedTile.y+1) * texstepy, texstepx, -texstepy));
+		GUI.DrawTextureWithTexCoords(
+			new Rect(260, 20, 50, 50),
+			atlasTexture,
+			new Rect(pickedTile.x * texstepx, (pickedTile.y + 1) * texstepy, texstepx, -texstepy));
 
 		//show physx
-		GUI.DrawTexture(new Rect(this.atlasOffset.x, this.atlasOffset.y + atlasSize.y + 15, atlasSize.x, 50), physxTexture, ScaleMode.ScaleToFit);
+		GUI.DrawTexture(
+			new Rect(this.atlasOffset.x, this.atlasOffset.y + atlasSize.y + 15, atlasSize.x, 50),
+			physxTexture,
+			ScaleMode.ScaleToFit);
 	}
+}
 
 
-	/*
+/*
 	 //first process all x-based movement
 		this.hero.transform.Translate(dx, 0, 0);
 
@@ -1219,4 +1291,3 @@ public class TiledLevel : MonoBehaviour
 			}
 		}
 	 */
-}

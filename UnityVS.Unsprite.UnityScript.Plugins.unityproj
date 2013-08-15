@@ -50,11 +50,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Plugins\Blur.js" />
     <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\AmbientObscurance.js" />
     <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\AntialiasingAsPostEffect.js" />
     <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Bloom.js" />
     <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\BloomAndLensFlares.js" />
-    <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\Blur.js" />
     <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\CameraMotionBlur.js" />
     <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\ColorCorrectionCurves.js" />
     <Compile Include="Assets\Standard Assets\Image Effects (Pro Only)\ColorCorrectionLut.js" />
@@ -149,9 +149,9 @@
     <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\VortexEffect.shader" />
     <None Include="Assets\TiledTest\cameraadvances\DisplayGridlines.shader" />
     <None Include="Assets\TiledTest\cameraadvances\DisplayPhysx.shader" />
-    <None Include="Assets\TiledTest\light\DarkShader.shader" />
     <None Include="Assets\TiledTest\light\PostEffectLighting.shader" />
-    <None Include="Assets\TiledTest\light\RenderLightShader.shader" />
+    <None Include="Assets\TiledTest\renderlight\DarkShader.shader" />
+    <None Include="Assets\TiledTest\renderlight\RenderLightShader.shader" />
     <None Include="Assets\Unsprite\SpritesShader.shader" />
     <None Include="Assets\Plugins\System.Xml.Linq.dll" />
   </ItemGroup>
@@ -170,6 +170,7 @@
     <Folder Include="Assets\TiledTest" />
     <Folder Include="Assets\TiledTest\cameraadvances" />
     <Folder Include="Assets\TiledTest\light" />
+    <Folder Include="Assets\TiledTest\renderlight" />
     <Folder Include="Assets\Unsprite" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2012\UnityVS.UnityScript.targets" />

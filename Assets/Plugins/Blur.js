@@ -26,6 +26,15 @@ class Blur extends PostEffectsBase {
 	public var blurShader : Shader;
 	private var blurMaterial : Material = null;
 	
+
+	function SetBlurShader(inshader : Shader)
+    {
+        blurShader = inshader;
+        blurSize = 4.9f;
+    }
+
+
+
 	function CheckResources () : boolean {	
 		CheckSupport (false);	
 	

@@ -13,11 +13,12 @@ public class RenderLight : MonoBehaviour
 
 	public Shader LightShader;
 	public Shader DarkShader;
+	public RenderTexture RenderTexture;
 
-	public List<Vector2> pointArray = new List<Vector2>();
+	public Lightsource ParentLight;
+
 
 	private Material mat;
-
 	private Material darkMat;
 
 	#endregion
@@ -29,7 +30,7 @@ public class RenderLight : MonoBehaviour
 	/// <summary>
 	/// </summary>
 	/// <param name="light"></param>
-	private void ConstructAndDrawLightCone(Lightsource light)
+	private void ConstructAndDrawLightCone(LightCone light)
 	{
 		this.mat.SetVector("_Colour", new Vector4(1, 1, 1, 1));
 		this.mat.SetVector("_LightPos", new Vector4(light.Point.x, light.Point.y, 0, 0));
@@ -59,7 +60,7 @@ public class RenderLight : MonoBehaviour
 	/// <param name="light"></param>
 	/// <param name="inf"></param>
 	/// <param name="tilePos"></param>
-	private void ConstructAndDrawObstacleVolume(Lightsource light, TileInfo inf, Rect tilePos)
+	private void ConstructAndDrawObstacleVolume(LightCone light, TileInfo inf, Rect tilePos)
 	{
 		var allowed = new List<TileType>
 		              {
@@ -75,7 +76,6 @@ public class RenderLight : MonoBehaviour
 			return;
 		}
 
-		var resultVolume = new List<Vector2>();
 
 		//clamp light angle between 0 and 2PI
 		if (light.Angle < 0)
@@ -237,37 +237,38 @@ public class RenderLight : MonoBehaviour
 	// Update is called once per frame
 	private void OnPostRender()
 	{
-		GL.PushMatrix();
-
 		//this.InitializePointsArray();
 		int i, j;
 
-		var lev = GameObject.Find("TiledLevel").GetComponent<TiledLevel>();
-		List<Lightsource> lights = lev.Lights;
+		TiledLevel lev = GameObject.Find("TiledLevel").GetComponent<TiledLevel>();
 		List<List<TileInfo>> Tiles = lev.Tiles;
 
-		Lightsource light = lights[0];
-		this.ConstructAndDrawLightCone(light);
-
-		for (i = 0; i < Tiles.Count; i++)
+		// LIGHTCONE
+		if (typeof(LightCone) == ParentLight.GetType())
 		{
-			for (j = 0; j < Tiles[i].Count; j++)
+			LightCone light = ParentLight as LightCone;
+
+			this.ConstructAndDrawLightCone(light);
+
+			for (i = 0; i < Tiles.Count; i++)
 			{
-				if ((new Vector2(i * lev.GlobalScale, j * lev.GlobalScale) - light.Point).magnitude
-				    < lev.GlobalScale + light.MaxRadius)
+				for (j = 0; j < Tiles[i].Count; j++)
 				{
-					this.ConstructAndDrawObstacleVolume(
-						light,
-						Tiles[i][j],
-						new Rect(i * lev.GlobalScale, j * lev.GlobalScale, lev.GlobalScale, lev.GlobalScale));
+					if ((new Vector2(i * lev.GlobalScale, j * lev.GlobalScale) - light.Point).magnitude
+						< lev.GlobalScale + light.MaxRadius)
+					{
+						this.ConstructAndDrawObstacleVolume(
+							light,
+							Tiles[i][j],
+							new Rect(i * lev.GlobalScale, j * lev.GlobalScale, lev.GlobalScale, lev.GlobalScale));
+					}
 				}
 			}
 		}
-
-		GL.PopMatrix();
+		
 	}
 
-	private void SetupSmalllist(ref List<UnoVert> list, Lightsource light)
+	private void SetupSmalllist(ref List<UnoVert> list, LightCone light)
 	{
 		//calculate parameters
 		foreach (UnoVert smal in list)
@@ -372,7 +373,7 @@ public class RenderLight : MonoBehaviour
 		/// <summary>
 		/// </summary>
 		/// <param name="light"></param>
-		public void CalculateParams(Lightsource light)
+		public void CalculateParams(LightCone light)
 		{
 			Vector2 vec = this.realPos - light.Point;
 			this.angOffset = (float)Math.Atan2(vec.y, vec.x);

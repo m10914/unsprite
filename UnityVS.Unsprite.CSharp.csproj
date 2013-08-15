@@ -62,10 +62,11 @@
   <ItemGroup>
     <Compile Include="Assets\loader.cs" />
     <Compile Include="Assets\TiledTest\cameraadvances\DisplayGridlines.cs" />
-    <Compile Include="Assets\TiledTest\light\Lightsource.cs" />
+    <Compile Include="Assets\TiledTest\light\LastCameraRenderer.cs" />
     <Compile Include="Assets\TiledTest\light\PostEffectLighting.cs" />
-    <Compile Include="Assets\TiledTest\light\RenderLight.cs" />
+    <Compile Include="Assets\TiledTest\Lightsource.cs" />
     <Compile Include="Assets\TiledTest\PhysxSprite.cs" />
+    <Compile Include="Assets\TiledTest\renderlight\RenderLight.cs" />
     <Compile Include="Assets\TiledTest\TiledLevel.cs" />
     <Compile Include="Assets\TiledTest\TileInfo.cs" />
     <Compile Include="Assets\Unsprite\Sprite.cs" />
@@ -144,9 +145,9 @@
     <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\VortexEffect.shader" />
     <None Include="Assets\TiledTest\cameraadvances\DisplayGridlines.shader" />
     <None Include="Assets\TiledTest\cameraadvances\DisplayPhysx.shader" />
-    <None Include="Assets\TiledTest\light\DarkShader.shader" />
     <None Include="Assets\TiledTest\light\PostEffectLighting.shader" />
-    <None Include="Assets\TiledTest\light\RenderLightShader.shader" />
+    <None Include="Assets\TiledTest\renderlight\DarkShader.shader" />
+    <None Include="Assets\TiledTest\renderlight\RenderLightShader.shader" />
     <None Include="Assets\Unsprite\SpritesShader.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2012\UnityVS.CSharp.targets" />
