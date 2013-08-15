@@ -32,7 +32,7 @@ public class RenderLight : MonoBehaviour
 	/// <param name="light"></param>
 	private void ConstructAndDrawLightCone(LightCone light)
 	{
-		this.mat.SetVector("_Colour", new Vector4(1, 1, 1, 1));
+		this.mat.SetVector("_Colour", new Vector4(light.Color.x, light.Color.y, light.Color.z, 1));
 		this.mat.SetVector("_LightPos", new Vector4(light.Point.x, light.Point.y, 0, 0));
 		this.mat.SetFloat("_MaxDist", light.MaxRadius);
 		this.mat.SetPass(0);

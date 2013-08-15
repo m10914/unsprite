@@ -66,9 +66,10 @@ public class TiledLevel : MonoBehaviour
 	/// <param name="maxRadius"></param>
 	/// <param name="initAngle"></param>
 	/// <param name="angleRange"></param>
-	private void AddLightCone(Vector2 pos, float maxRadius, float initAngle, float angleRange)
+	private void AddLightCone(Vector2 pos, float maxRadius, float initAngle, float angleRange, Vector3 lightColor)
 	{
 		LightCone nlc = new LightCone(pos, maxRadius, initAngle, angleRange);
+		nlc.Color = lightColor;
 		Lights.Add(nlc);
 
 		GameObject nc = new GameObject();
@@ -838,8 +839,12 @@ public class TiledLevel : MonoBehaviour
 		this.InitCharacters();
 
 		//init lights
-		this.AddLightCone(new Vector2(170, -30), 100, (float)(Math.PI / 2), (float)(Math.PI / 4f));
-		this.AddLightCone(new Vector2(40, 0), 100, (float)(Math.PI / 2), (float)(Math.PI / 4f));
+		this.AddLightCone(new Vector2(170, 60), 80, 0, (float)(Math.PI / 4f), new Vector3(1f, 1f, 1f)); //player's flashlight
+
+		//this.AddLightCone(new Vector2(170, -30), 100, (float)(Math.PI / 2), (float)(Math.PI / 4f), new Vector3(1, 1f, 1f));
+		//this.AddLightCone(new Vector2(40, 0), 80, (float)(Math.PI / 2), (float)(Math.PI / 4f), new Vector3(1f, 1f, 1f));
+
+		
 	}
 
 
@@ -1012,14 +1017,23 @@ public class TiledLevel : MonoBehaviour
 		//right mouse down
 		if (Input.GetMouseButton(1))
 		{
-			LightCone light = Lights[0] as LightCone;
-			Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			if (Lights.Count > 0)
+			{
+				LightCone light = Lights[0] as LightCone;
+				Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-			//direct light
-			light.Angle = (float)Math.Atan2(mouseWorld.y - light.Point.y, mouseWorld.x - light.Point.x);
-			light.MaxRadius = (new Vector2(mouseWorld.x, mouseWorld.y) - light.Point).magnitude;
-			if (light.Angle < 0) light.Angle += (float)Math.PI * 2f;
+				//direct light
+				light.Angle = (float)Math.Atan2(mouseWorld.y - light.Point.y, mouseWorld.x - light.Point.x);
+				light.MaxRadius = (new Vector2(mouseWorld.x, mouseWorld.y) - light.Point).magnitude;
+				if (light.Angle < 0) light.Angle += (float)Math.PI * 2f;
+			}		
 		}
+		if (Lights.Count > 0)
+		{
+			LightCone light = Lights[0] as LightCone;
+			light.Point = new Vector2(hero.transform.position.x + GlobalScale, hero.transform.position.y + 1.5f*GlobalScale);
+		}
+
 
 
 		if (bPlaymode)

@@ -49,7 +49,7 @@
 			{
 				float4 color = tex2D(_GrabTexture, IN.texcoord);
 				float4 color2 = tex2D(_LightTex, IN.texcoord);
-				return color + color2;
+				return sqrt(color*color + color2*color2);
 			}
 			ENDCG
 		}
@@ -90,7 +90,7 @@
 			float4 pix ( v2f IN ) : COLOR
 			{
 				float4 mainColor = tex2D(_MainTex, IN.texcoord);
-				float4 lightColor = tex2D(_GrabTexture, IN.texcoord) + float4(0.5, 0.5, 0.5, 0);
+				float4 lightColor = tex2D(_GrabTexture, IN.texcoord);// + float4(0.2, 0.2, 0.2, 0);
 
 				return mainColor * lightColor;
 			}
